@@ -1,14 +1,16 @@
-/* global describe, it, expect, jest */
+/* global describe, beforeEach, it, expect, jest */
 import typeSnob from './index';
 import { Children } from 'react';
 
-const fakeGetDisplayName = jest.fn(() => 'component-name-here')
+const fakeGetDisplayName = jest.fn(() => 'component-name-here');
 jest.mock('./get-display-name', () => (...args) => fakeGetDisplayName(...args));
 const infractionReporter = jest.fn();
 jest.mock('./console-reporter', () => (...args) => infractionReporter(...args));
 
 describe('Type Snob', () => {
-  const createElement = jest.fn(() => ({ _owner: { getName() { return 'ParentItem'; } } }));
+  const createElement = jest.fn(() => ({ _owner: { getName() {
+    return 'ParentItem';
+  } } }));
   const FakeReact = { Children, createElement };
 
   beforeEach(() => {

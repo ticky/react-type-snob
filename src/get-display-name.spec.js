@@ -1,4 +1,4 @@
-/* global describe, it, expect, jest */
+/* global describe, it, expect */
 import getDisplayName from './get-display-name';
 
 describe('getDisplayName', () => {
@@ -7,7 +7,7 @@ describe('getDisplayName', () => {
   });
 
   it('returns expected value for a type with a displayName', () => {
-    function component() {};
+    function component() {}
     component.displayName = 'ExpectedValue';
 
     expect(getDisplayName(component)).toMatchSnapshot();
