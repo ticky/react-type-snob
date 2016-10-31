@@ -1,7 +1,7 @@
 {
   "name": "react-type-snob",
-  "version": "0.0.1",
-  "description": "Bugs you about little typography details in your React app",
+  "version": "0.0.2",
+  "description": "Encourages good typographic details in your React app",
   "main": "lib/index.js",
   "scripts": {
     "prepublish": "babel src --out-dir lib --source-maps inline --ignore \"**/*.spec.js\"",
