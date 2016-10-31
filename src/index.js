@@ -1,3 +1,6 @@
+import getDisplayName from './get-display-name';
+import consoleReporter from './console-reporter';
+
 const SNOBBY_TESTS = [
   {
     name: 'ugly quotes',
@@ -13,11 +16,24 @@ const SNOBBY_TESTS = [
   }
 ];
 
-export default function typeSnob(React) {
+export default function typeSnob(React, reporter = consoleReporter) {
+  if (!React) {
+    throw new Error('[React Type Snob] `React` was not supplied!');
+  }
+
+  if (!React.createElement || typeof React.createElement !== 'function') {
+    throw new Error('[React Type Snob] `React.createElement` isn\'t a function - are you sure you called this with React?');
+  }
+
+  if (!React.Children) {
+    throw new Error('[React Type Snob] `React.Children` seems to be missing - are you sure you called this with React?');
+  }
+
   // keep original `createElement` method, as we intend to proxy it!
   const createElement = React.createElement;
 
-  React.createElement = function typeSnobCreateElement(type, props = {}, ...rawChildren) {
+  React.createElement = function typeSnobCreateElement(type, rawProps, ...rawChildren) {
+    const props = rawProps || {};
     let children;
 
     if (rawChildren.length === 0) {
@@ -27,25 +43,9 @@ export default function typeSnob(React) {
     }
 
     // proy out to the real `createElement` early so we don't try to test any invalid states!
-    const reactElement = createElement.call(this, type, props, ...rawChildren);
+    const reactElement = createElement.call(this, type, rawProps, ...rawChildren);
 
-    let displayName = 'Unknown Element';
-
-    if (type.displayName) {
-      // if the component has a React `displayName`, let's use it
-      displayName = type.displayName;
-    } else if (typeof type === 'string') {
-      // if it's a string, we'll use it straight up, then append some identifying stuff
-      displayName = type;
-      if (typeof props.id === 'string') {
-        displayName = [displayName, props.id].join('#');
-      } else if (typeof props.className === 'string') {
-        displayName = [displayName, ...props.className.split(' ')].join('.');
-      }
-    } else if (typeof type === 'function' && type.name) {
-      // if it's a function, let's use the name if it's not blank!
-      displayName = type.name;
-    }
+    const displayName = getDisplayName(type, rawProps);
 
     const errors = [];
 
@@ -60,7 +60,7 @@ export default function typeSnob(React) {
     });
 
     if (errors.length > 0) {
-      console.warn(
+      reporter(
         `[React Type Snob] Problems detected in copy of \`${displayName}\`; ${errors.join(', ')}. Please check the render method of \`${reactElement._owner.getName()}\``
       );
     }

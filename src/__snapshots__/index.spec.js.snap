@@ -1,0 +1,26 @@
+exports[`Type Snob typeSnobCreateElement tests for full-stops as ellipses 1`] = `
+Array [
+  Array [
+    "[React Type Snob] Problems detected in copy of \`component-name-here\`; full-stops as ellipses. Please check the render method of \`ParentItem\`",
+  ],
+]
+`;
+
+exports[`Type Snob typeSnobCreateElement tests for full-stops as ellipses 2`] = `
+Array [
+  Array [
+    "[React Type Snob] Problems detected in copy of \`component-name-here\`; full-stops as ellipses, space preceding ellipses. Please check the render method of \`ParentItem\`",
+  ],
+  Array [
+    "[React Type Snob] Problems detected in copy of \`component-name-here\`; space preceding ellipses. Please check the render method of \`ParentItem\`",
+  ],
+]
+`;
+
+exports[`Type Snob typeSnobCreateElement tests for ugly quotes 1`] = `
+Array [
+  Array [
+    "[React Type Snob] Problems detected in copy of \`component-name-here\`; ugly quotes. Please check the render method of \`ParentItem\`",
+  ],
+]
+`;
