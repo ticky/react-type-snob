@@ -1,23 +1,39 @@
-const tests = [
+import getDisplayName from './get-display-name';
+import consoleReporter from './console-reporter';
+
+const SNOBBY_TESTS = [
   {
     name: 'ugly quotes',
-    regexp: /['"]/g,
+    regexp: /['"]/g
   },
   {
     name: 'full-stops as ellipses',
-    regexp: /\.{2,}/g,
+    regexp: /\.{2,}/g
   },
   {
     name: 'space preceding ellipses',
-    regexp: /\s(?:\.{2,}|…)/g,
-  },
+    regexp: /\s(?:\.{2,}|…)/g
+  }
 ];
 
-export default function(React) {
+export default function typeSnob(React, reporter = consoleReporter) {
+  if (!React) {
+    throw new Error('[React Type Snob] `React` was not supplied!');
+  }
+
+  if (!React.createElement || typeof React.createElement !== 'function') {
+    throw new Error('[React Type Snob] `React.createElement` isn\'t a function - are you sure you called this with React?');
+  }
+
+  if (!React.Children) {
+    throw new Error('[React Type Snob] `React.Children` seems to be missing - are you sure you called this with React?');
+  }
+
+  // keep original `createElement` method, as we intend to proxy it!
   const createElement = React.createElement;
 
-  React.createElement = function(type, rawProps, ...rawChildren) {
-    let props = rawProps || {};
+  React.createElement = function typeSnobCreateElement(type, rawProps, ...rawChildren) {
+    const props = rawProps || {};
     let children;
 
     if (rawChildren.length === 0) {
@@ -26,31 +42,16 @@ export default function(React) {
       children = rawChildren;
     }
 
-    let reactElement = createElement.apply(this, [type, props].concat(rawChildren));
+    // proy out to the real `createElement` early so we don't try to test any invalid states!
+    const reactElement = createElement.call(this, type, rawProps, ...rawChildren);
 
-    let displayName = 'Unknown Element';
+    const displayName = getDisplayName(type, rawProps);
 
-    if (type.displayName) {
-      // If the component has a React displayName, let's use it
-      displayName = type.displayName;
-    } else if (typeof type === 'string') {
-      // If it's a string, we'll use it straight up, then append some identifying stuff
-      displayName = type;
-      if (typeof props.id === 'string') {
-        displayName = [displayName, props.id].join('#');
-      } else if (typeof props.className === 'string') {
-        displayName = [displayName].concat(props.className.split(' ')).join('.');
-      }
-    } else if (typeof type === 'function' && type.name) {
-      // If it's a function, let's use the name if it's not blank!
-      displayName = type.name;
-    }
-
-    let errors = [];
+    const errors = [];
 
     React.Children.forEach(children, (child) => {
       if (typeof child === 'string') {
-        tests.forEach(({name, regexp}) => {
+        SNOBBY_TESTS.forEach(({ name, regexp }) => {
           if (regexp.test(child) && errors.indexOf(name) === -1) {
             errors.push(name);
           }
@@ -59,7 +60,9 @@ export default function(React) {
     });
 
     if (errors.length > 0) {
-      console.warn(`[React Type Snob] Problems detected in copy of \`${displayName}\`; ${errors.join(', ')}. Please check the render method of \`${reactElement._owner.getName()}\``);
+      reporter(
+        `[React Type Snob] Problems detected in copy of \`${displayName}\`; ${errors.join(', ')}. Please check the render method of \`${reactElement._owner.getName()}\``
+      );
     }
 
     return reactElement;
