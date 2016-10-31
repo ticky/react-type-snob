@@ -6,7 +6,7 @@ Bugs you about little typography details in your React app.
 ## Usage
 
 ```shell
-npm install --save react-type-snob
+yarn add react-type-snob || npm install --save react-type-snob
 ```
 
 ```javascript
