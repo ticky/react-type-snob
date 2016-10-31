@@ -8,9 +8,13 @@ const infractionReporter = jest.fn();
 jest.mock('./console-reporter', () => (...args) => infractionReporter(...args));
 
 describe('Type Snob', () => {
-  const createElement = jest.fn(() => ({ _owner: { getName() {
-    return 'ParentItem';
-  } } }));
+  const createElement = jest.fn(() => ({
+    _owner: {
+      getName() {
+        return 'ParentItem';
+      }
+    }
+  }));
   const FakeReact = { Children, createElement };
 
   beforeEach(() => {
