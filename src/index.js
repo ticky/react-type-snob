@@ -4,7 +4,17 @@ import getDisplayName from './get-display-name';
 import consoleReporter from './console-reporter';
 import verifyReact from './verify-react';
 
+const TEST_COUNTS = {
+  EVEN: 'even',
+  ODD: 'odd'
+};
+
 const SNOBBY_TESTS = [
+  {
+    name: 'unbalanced double quotes',
+    regexp: /["“”]/g,
+    count: TEST_COUNTS.EVEN
+  },
   {
     name: 'ugly double quotes',
     regexp: /"/g,
@@ -91,6 +101,16 @@ export default function typeSnob(React, reporter = consoleReporter) {
             // *do not* replace, as we may need to do further processing
             return match;
           });
+
+          if (test.count) {
+            if (typeof test.count === 'string') {
+              if (test.count === TEST_COUNTS.EVEN && contexts.length % 2 === 0) {
+                return;
+              } else if (test.count === TEST_COUNTS.ODD && contexts.length % 2 === 1) {
+                return;
+              }
+            }
+          }
 
           if (contexts.length === 0) {
             return;
