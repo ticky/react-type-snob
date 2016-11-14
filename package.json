@@ -41,5 +41,8 @@
   },
   "jest": {
     "collectCoverage": true
+  },
+  "dependencies": {
+    "doc-chomp": "^1.1.0"
   }
 }

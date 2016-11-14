@@ -1,14 +1,24 @@
+import DocChomp from 'doc-chomp';
+
 import getDisplayName from './get-display-name';
 import consoleReporter from './console-reporter';
+import verifyReact from './verify-react';
 
 const SNOBBY_TESTS = [
   {
-    name: 'ugly quotes',
-    regexp: /['"]/g
+    name: 'ugly double quotes',
+    regexp: /"/g,
+    suggestion: '`“` or `”`'
+  },
+  {
+    name: 'ugly single quotes',
+    regexp: /'/g,
+    suggestion: '`‘` or `’`'
   },
   {
     name: 'full-stops as ellipses',
-    regexp: /\.{2,}/g
+    regexp: /\.{2,}/g,
+    suggestion: '`…`'
   },
   {
     name: 'space preceding ellipses',
@@ -16,18 +26,10 @@ const SNOBBY_TESTS = [
   }
 ];
 
+const CONTEXT_LENGTH = 20;
+
 export default function typeSnob(React, reporter = consoleReporter) {
-  if (!React) {
-    throw new Error('[React Type Snob] `React` was not supplied!');
-  }
-
-  if (!React.createElement || typeof React.createElement !== 'function') {
-    throw new Error('[React Type Snob] `React.createElement` isn\'t a function - are you sure you called this with React?');
-  }
-
-  if (!React.Children) {
-    throw new Error('[React Type Snob] `React.Children` seems to be missing - are you sure you called this with React?');
-  }
+  verifyReact(React);
 
   // keep original `createElement` method, as we intend to proxy it!
   const createElement = React.createElement;
@@ -42,26 +44,57 @@ export default function typeSnob(React, reporter = consoleReporter) {
       children = rawChildren;
     }
 
-    // proy out to the real `createElement` early so we don't try to test any invalid states!
+    // proxy out to the real `createElement` early so we don't try to test any invalid states!
     const reactElement = createElement.call(this, type, rawProps, ...rawChildren);
 
-    const displayName = getDisplayName(type, rawProps);
-
-    const errors = [];
+    let textContent = '';
 
     React.Children.forEach(children, (child) => {
-      if (typeof child === 'string') {
-        SNOBBY_TESTS.forEach(({ name, regexp }) => {
-          if (regexp.test(child) && errors.indexOf(name) === -1) {
-            errors.push(name);
-          }
-        });
-      }
+      textContent += React.isValidElement(child) ? '[React Element]' : child;
     });
 
+    const errors = SNOBBY_TESTS
+      .map((test) => {
+        const contexts = [];
+
+        textContent.replace(test.regexp, (match, ...args) => {
+          const fullText = args.pop();
+
+          const startOffset = args.pop();
+          const endOffset = startOffset + match.length;
+
+          const contextStartOffset = Math.max(startOffset - CONTEXT_LENGTH, 0);
+          const contextEndOffset = Math.min(endOffset + CONTEXT_LENGTH, fullText.length);
+
+          contexts.push(fullText.slice(contextStartOffset, contextEndOffset).replace(/\n/g, ' '));
+
+          // *do not* replace, as we may need to do further processing
+          return match;
+        });
+
+        if (contexts.length === 0) {
+          return;
+        }
+
+        return Object.assign({ contexts }, test);
+      })
+      .filter((returnedThing) => returnedThing);
+
     if (errors.length > 0) {
-      reporter(
-        `[React Type Snob] Problems detected in copy of \`${displayName}\`; ${errors.join(', ')}. Please check the render method of \`${reactElement._owner.getName()}\``
+      reporter(DocChomp`
+        [React Type Snob] Problems detected in text content of \`${getDisplayName(type, rawProps)}\`${(reactElement._owner && reactElement._owner.getName) ? `. Please check the render method of \`${reactElement._owner.getName()}\`` : ''};
+        ${errors.map(({ name, suggestion, contexts }) => {
+          let report = `* Found ${name};`;
+
+          contexts.forEach((context) => report += `\n   * \`${context}\``);
+
+          if (suggestion) {
+            report += `\n  Suggested replacements: ${suggestion}`;
+          }
+
+          return report;
+        }).join('\n\n')
+        }`
       );
     }
 

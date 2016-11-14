@@ -1,7 +1,28 @@
+exports[`Type Snob typeSnobCreateElement gracefully handles multiple suggestions 1`] = `
+Array [
+  Array [
+    "[React Type Snob] Problems detected in text content of \`component-name-here\`. Please check the render method of \`ParentItem\`;
+* Found ugly single quotes;
+   * \`you didn\'t make very good use\`
+  Suggested replacements: \`‘\` or \`’\`
+
+* Found full-stops as ellipses;
+   * \`use of Unicode here ...\`
+  Suggested replacements: \`…\`
+
+* Found space preceding ellipses;
+   * \` use of Unicode here ...\`",
+  ],
+]
+`;
+
 exports[`Type Snob typeSnobCreateElement tests for full-stops as ellipses 1`] = `
 Array [
   Array [
-    "[React Type Snob] Problems detected in copy of \`component-name-here\`; full-stops as ellipses. Please check the render method of \`ParentItem\`",
+    "[React Type Snob] Problems detected in text content of \`component-name-here\`. Please check the render method of \`ParentItem\`;
+* Found full-stops as ellipses;
+   * \`his typography sucks...\`
+  Suggested replacements: \`…\`",
   ],
 ]
 `;
@@ -9,18 +30,42 @@ Array [
 exports[`Type Snob typeSnobCreateElement tests for full-stops as ellipses 2`] = `
 Array [
   Array [
-    "[React Type Snob] Problems detected in copy of \`component-name-here\`; full-stops as ellipses, space preceding ellipses. Please check the render method of \`ParentItem\`",
+    "[React Type Snob] Problems detected in text content of \`component-name-here\`. Please check the render method of \`ParentItem\`;
+* Found full-stops as ellipses;
+   * \`aphy *really* sucks ...\`
+  Suggested replacements: \`…\`
+
+* Found space preceding ellipses;
+   * \`raphy *really* sucks ...\`",
   ],
   Array [
-    "[React Type Snob] Problems detected in copy of \`component-name-here\`; space preceding ellipses. Please check the render method of \`ParentItem\`",
+    "[React Type Snob] Problems detected in text content of \`component-name-here\`. Please check the render method of \`ParentItem\`;
+* Found space preceding ellipses;
+   * \` *really* sucks, too …\`",
   ],
 ]
 `;
 
-exports[`Type Snob typeSnobCreateElement tests for ugly quotes 1`] = `
+exports[`Type Snob typeSnobCreateElement tests for ugly double quotes 1`] = `
 Array [
   Array [
-    "[React Type Snob] Problems detected in copy of \`component-name-here\`; ugly quotes. Please check the render method of \`ParentItem\`",
+    "[React Type Snob] Problems detected in text content of \`component-name-here\`. Please check the render method of \`ParentItem\`;
+* Found ugly double quotes;
+   * \`me you didn’t use a \"curly quote\" here\`
+   * \`t use a \"curly quote\" here\`
+  Suggested replacements: \`“\` or \`”\`",
+  ],
+]
+`;
+
+exports[`Type Snob typeSnobCreateElement tests for ugly single quotes 1`] = `
+Array [
+  Array [
+    "[React Type Snob] Problems detected in text content of \`component-name-here\`. Please check the render method of \`ParentItem\`;
+* Found ugly single quotes;
+   * \`it\'s a shame you didn\'t\`
+   * \`t\'s a shame you didn\'t use a “curly quote\`
+  Suggested replacements: \`‘\` or \`’\`",
   ],
 ]
 `;
