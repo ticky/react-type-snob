@@ -1,3 +1,5 @@
+import DocChomp from 'doc-chomp';
+
 import getDisplayName from './get-display-name';
 import consoleReporter from './console-reporter';
 import verifyReact from './verify-react';
@@ -24,27 +26,7 @@ const SNOBBY_TESTS = [
   }
 ];
 
-const JOINERS = {
-  AND: ' and ',
-  COMMA: ', ',
-  LINE: '\n'
-};
-
-const getReportDetails = (errors) => {
-  const errorData = {};
-
-  errors.forEach(({ name, suggestion }, index, errorList) => {
-    const nameJoiner = (index === errorList.length - 1) ? JOINERS.AND : JOINERS.COMMA;
-
-    errorData.names = (errorData.names ? errorData.names + nameJoiner : '') + name;
-
-    if (suggestion) {
-      errorData.suggestions = (errorData.suggestions ? errorData.suggestions + JOINERS.LINE : '') + `* “${name}” test suggests ${suggestion}`;
-    }
-  });
-
-  return errorData;
-};
+const CONTEXT_LENGTH = 20;
 
 export default function typeSnob(React, reporter = consoleReporter) {
   verifyReact(React);
@@ -71,22 +53,49 @@ export default function typeSnob(React, reporter = consoleReporter) {
       textContent += React.isValidElement(child) ? '[React Element]' : child;
     });
 
-    const errors = SNOBBY_TESTS.filter(({ regexp }) => regexp.test(textContent));
+    const errors = SNOBBY_TESTS
+      .map((test) => {
+        const contexts = [];
+
+        textContent.replace(test.regexp, (match, ...args) => {
+          const fullText = args.pop();
+
+          const startOffset = args.pop();
+          const endOffset = startOffset + match.length;
+
+          const contextStartOffset = Math.max(startOffset - CONTEXT_LENGTH, 0);
+          const contextEndOffset = Math.min(endOffset + CONTEXT_LENGTH, fullText.length);
+
+          contexts.push(fullText.slice(contextStartOffset, contextEndOffset).replace(/\n/g, ' '));
+
+          // *do not* replace, as we may need to do further processing
+          return match;
+        });
+
+        if (contexts.length === 0) {
+          return;
+        }
+
+        return Object.assign({ contexts }, test);
+      })
+      .filter((returnedThing) => returnedThing);
 
     if (errors.length > 0) {
-      const { names, suggestions } = getReportDetails(errors);
+      reporter(DocChomp`
+        [React Type Snob] Problems detected in text content of \`${getDisplayName(type, rawProps)}\`${(reactElement._owner && reactElement._owner.getName) ? `. Please check the render method of \`${reactElement._owner.getName()}\`` : ''};
+        ${errors.map(({ name, suggestion, contexts }) => {
+          let report = `* Found ${name};`;
 
-      const reportLines = [`[React Type Snob] Problems detected in text content of \`${getDisplayName(type, rawProps)}\`; ${names}.`];
+          contexts.forEach((context) => report += `\n   * \`${context}\``);
 
-      if (suggestions) {
-        reportLines.push(suggestions);
-      }
+          if (suggestion) {
+            report += `\n  Suggested replacements: ${suggestion}`;
+          }
 
-      if (reactElement._owner && reactElement._owner.getName) {
-        reportLines.push(`Please check the render method of \`${reactElement._owner.getName()}\``);
-      }
-
-      reporter(reportLines.join(JOINERS.LINE));
+          return report;
+        }).join('\n\n')
+        }`
+      );
     }
 
     return reactElement;
