@@ -21,20 +21,47 @@ yarn add react-type-snob || npm install --save react-type-snob
 
 Attach to React:
 
-```javascript
+```jsx
 import React from 'react';
 import typeSnob from 'react-type-snob';
 
 typeSnob(React);
+
+class ParentItem extends React.Component {
+  render() {
+    return (
+      <span>you didn't make very good use of Unicode here ...</span>
+    );
+  }
+}
+
+ReactDOM.render(
+  <ParentItem />,
+  document.getElementById('root')
+);
 ```
 
-Then watch your console for errors!
+Then watch your console for errors like this!
+
+```
+[React Type Snob] Problems detected in text content of `span`. Please check the render method of `ParentItem`;
+* Found ugly single quotes;
+   * `you didn't make very good use`
+  Suggested replacements: `‘` or `’`
+
+* Found full-stops as ellipses;
+   * `use of Unicode here ...`
+  Suggested replacements: `…`
+
+* Found space preceding ellipses;
+   * ` use of Unicode here ...`
+```
 
 ### With Webpack
 
 If you're using Webpack, you can use it only in development by using it like this;
 
-```javascript
+```jsx
 import React from 'react';
 
 if (process.env.NODE_ENV !== "production") {
@@ -48,7 +75,7 @@ Then, use a `new webpack.IgnorePlugin(/^react-type-snob$/)` in your production W
 
 Optionally, you may pass a function as the second parameter, which will recieve warning messages. You can use this to either throw, or integrate with a custom logging solution.
 
-```javascript
+```jsx
 import React from 'react';
 import typeSnob from 'react-type-snob';
 
