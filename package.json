@@ -1,6 +1,6 @@
 {
   "name": "react-type-snob",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Encourages good typographic details in your React app",
   "main": "lib/index.js",
   "scripts": {
