@@ -1,14 +1,22 @@
 import getDisplayName from './get-display-name';
 import consoleReporter from './console-reporter';
+import verifyReact from './verify-react';
 
 const SNOBBY_TESTS = [
   {
-    name: 'ugly quotes',
-    regexp: /['"]/g
+    name: 'ugly double quotes',
+    regexp: /"/g,
+    suggestion: '`“` or `”`'
+  },
+  {
+    name: 'ugly single quotes',
+    regexp: /'/g,
+    suggestion: '`‘` or `’`'
   },
   {
     name: 'full-stops as ellipses',
-    regexp: /\.{2,}/g
+    regexp: /\.{2,}/g,
+    suggestion: '`…`'
   },
   {
     name: 'space preceding ellipses',
@@ -16,18 +24,30 @@ const SNOBBY_TESTS = [
   }
 ];
 
+const JOINERS = {
+  AND: ' and ',
+  COMMA: ', ',
+  LINE: '\n'
+};
+
+const getReportDetails = (errors) => {
+  const errorData = {};
+
+  errors.forEach(({ name, suggestion }, index, errorList) => {
+    const nameJoiner = (index === errorList.length - 1) ? JOINERS.AND : JOINERS.COMMA;
+
+    errorData.names = (errorData.names ? errorData.names + nameJoiner : '') + name;
+
+    if (suggestion) {
+      errorData.suggestions = (errorData.suggestions ? errorData.suggestions + JOINERS.LINE : '') + `* “${name}” test suggests ${suggestion}`;
+    }
+  });
+
+  return errorData;
+};
+
 export default function typeSnob(React, reporter = consoleReporter) {
-  if (!React) {
-    throw new Error('[React Type Snob] `React` was not supplied!');
-  }
-
-  if (!React.createElement || typeof React.createElement !== 'function') {
-    throw new Error('[React Type Snob] `React.createElement` isn\'t a function - are you sure you called this with React?');
-  }
-
-  if (!React.Children) {
-    throw new Error('[React Type Snob] `React.Children` seems to be missing - are you sure you called this with React?');
-  }
+  verifyReact(React);
 
   // keep original `createElement` method, as we intend to proxy it!
   const createElement = React.createElement;
@@ -42,27 +62,31 @@ export default function typeSnob(React, reporter = consoleReporter) {
       children = rawChildren;
     }
 
-    // proy out to the real `createElement` early so we don't try to test any invalid states!
+    // proxy out to the real `createElement` early so we don't try to test any invalid states!
     const reactElement = createElement.call(this, type, rawProps, ...rawChildren);
 
-    const displayName = getDisplayName(type, rawProps);
-
-    const errors = [];
+    let textContent = '';
 
     React.Children.forEach(children, (child) => {
-      if (typeof child === 'string') {
-        SNOBBY_TESTS.forEach(({ name, regexp }) => {
-          if (regexp.test(child) && errors.indexOf(name) === -1) {
-            errors.push(name);
-          }
-        });
-      }
+      textContent += React.isValidElement(child) ? '[React Element]' : child;
     });
 
+    const errors = SNOBBY_TESTS.filter(({ regexp }) => regexp.test(textContent));
+
     if (errors.length > 0) {
-      reporter(
-        `[React Type Snob] Problems detected in copy of \`${displayName}\`; ${errors.join(', ')}. Please check the render method of \`${reactElement._owner.getName()}\``
-      );
+      const { names, suggestions } = getReportDetails(errors);
+
+      const reportLines = [`[React Type Snob] Problems detected in text content of \`${getDisplayName(type, rawProps)}\`; ${names}.`];
+
+      if (suggestions) {
+        reportLines.push(suggestions);
+      }
+
+      if (reactElement._owner && reactElement._owner.getName) {
+        reportLines.push(`Please check the render method of \`${reactElement._owner.getName()}\``);
+      }
+
+      reporter(reportLines.join(JOINERS.LINE));
     }
 
     return reactElement;
