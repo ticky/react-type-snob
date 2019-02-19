@@ -30,7 +30,7 @@
     "babel-jest": "24.1.0",
     "babel-preset-es2015": "6.24.1",
     "babel-runtime": "6.26.0",
-    "eslint": "5.14.0",
+    "eslint": "5.14.1",
     "jest": "24.1.0",
     "react": "16.8.2"
   },
