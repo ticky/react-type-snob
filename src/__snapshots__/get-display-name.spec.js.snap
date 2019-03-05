@@ -1,3 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
 exports[`getDisplayName falls back when an unidentified type is supplied 1`] = `"Unknown Element"`;
 
 exports[`getDisplayName returns expected value for a string type with an id 1`] = `"div#expectedId"`;

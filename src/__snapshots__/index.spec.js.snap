@@ -1,9 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
 exports[`Type Snob typeSnobCreateElement gracefully handles multiple suggestions 1`] = `
 Array [
   Array [
     "[React Type Snob] Problems detected in text content of \`component-name-here\`. Please check the render method of \`ParentItem\`;
 * Found ugly single quotes;
-   * \`you didn\'t make very good use\`
+   * \`you didn't make very good use\`
   Suggested replacements: \`‘\` or \`’\`
 
 * Found full-stops as ellipses;
@@ -51,8 +53,8 @@ Array [
   Array [
     "[React Type Snob] Problems detected in text content of \`component-name-here\`. Please check the render method of \`ParentItem\`;
 * Found ugly double quotes;
-   * \`me you didn’t use a \"curly quote\" here\`
-   * \`t use a \"curly quote\" here\`
+   * \`me you didn’t use a \\"curly quote\\" here\`
+   * \`t use a \\"curly quote\\" here\`
   Suggested replacements: \`“\` or \`”\`",
   ],
 ]
@@ -63,8 +65,8 @@ Array [
   Array [
     "[React Type Snob] Problems detected in text content of \`component-name-here\`. Please check the render method of \`ParentItem\`;
 * Found ugly single quotes;
-   * \`it\'s a shame you didn\'t\`
-   * \`t\'s a shame you didn\'t use a “curly quote\`
+   * \`it's a shame you didn't\`
+   * \`t's a shame you didn't use a “curly quote\`
   Suggested replacements: \`‘\` or \`’\`",
   ],
 ]
