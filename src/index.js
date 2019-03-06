@@ -16,6 +16,11 @@ const SNOBBY_TESTS = [
     count: TEST_COUNTS.EVEN
   },
   {
+    name: 'unbalanced single quotes',
+    regexp: /(^|[^\w])['‘’]|[^s]['‘’]([^\w]|$)/gi,
+    count: TEST_COUNTS.EVEN
+  },
+  {
     name: 'ugly double quotes',
     regexp: /"/g,
     suggestion: '`“` or `”`'
