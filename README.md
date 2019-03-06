@@ -1,5 +1,5 @@
 # Type Snob for React
-[![npm](https://img.shields.io/npm/v/react-type-snob.svg?maxAge=2592000)](https://www.npmjs.com/package/react-type-snob) ![react-type-snob](https://img.shields.io/npm/l/react-type-snob.svg?maxAge=2592000)  [![Build Status](https://travis-ci.org/ticky/react-type-snob.svg?branch=master)](https://travis-ci.org/ticky/react-type-snob) [![codecov](https://codecov.io/gh/ticky/react-type-snob/branch/master/graph/badge.svg)](https://codecov.io/gh/ticky/react-type-snob)
+[![npm](https://img.shields.io/npm/v/react-type-snob.svg?maxAge=2592000)](https://www.npmjs.com/package/react-type-snob) ![react-type-snob](https://img.shields.io/npm/l/react-type-snob.svg?maxAge=2592000)  [![Build Status](https://travis-ci.org/ticky/react-type-snob.svg?branch=develop)](https://travis-ci.org/ticky/react-type-snob) [![codecov](https://codecov.io/gh/ticky/react-type-snob/branch/develop/graph/badge.svg)](https://codecov.io/gh/ticky/react-type-snob)
 
 Encourages good typographic details in your React app
 
