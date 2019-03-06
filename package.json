@@ -2,13 +2,6 @@
   "name": "react-type-snob",
   "version": "0.0.3",
   "description": "Encourages good typographic details in your React app",
-  "main": "lib/index.js",
-  "scripts": {
-    "prepublish": "babel src --out-dir lib --source-maps inline --ignore \"**/*.spec.js\"",
-    "test": "jest",
-    "lint": "eslint src",
-    "lint-and-fixup": "eslint --fix src"
-  },
   "keywords": [
     "typography",
     "react",
@@ -23,6 +16,16 @@
   "repository": "https://github.com/ticky/react-type-snob.git",
   "author": "Jessica Stokes <hello@jessicastokes.net>",
   "license": "MIT",
+  "main": "lib/index.js",
+  "scripts": {
+    "prepublish": "babel src --out-dir lib --source-maps inline --ignore \"**/*.spec.js\"",
+    "test": "jest",
+    "lint": "eslint src",
+    "lint-and-fixup": "eslint --fix src"
+  },
+  "dependencies": {
+    "doc-chomp": "^1.1.0"
+  },
   "devDependencies": {
     "@babel/cli": "7.2.3",
     "@babel/core": "7.3.4",
@@ -41,8 +44,5 @@
   },
   "jest": {
     "collectCoverage": true
-  },
-  "dependencies": {
-    "doc-chomp": "^1.1.0"
   }
 }
