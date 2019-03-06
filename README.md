@@ -5,6 +5,7 @@ Encourages good typographic details in your React app
 
 Includes tests for:
 
+* Unbalanced Quotes
 * Ugly Quotes (`'` or `"`)
 * Full-stops used as ellipses (two or more `.` characters in a row)
 * Spaces preceding ellipses
