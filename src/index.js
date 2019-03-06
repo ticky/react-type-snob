@@ -26,7 +26,26 @@ const SNOBBY_TESTS = [
   }
 ];
 
+const IGNORED_DOM_ELEMENTS = [
+  'code',
+  'kbd',
+  'pre',
+  'samp'
+];
+
 const CONTEXT_LENGTH = 20;
+
+const testLineGenerator = ({ name, suggestion, contexts }) => {
+  let report = `* Found ${name};`;
+
+  contexts.forEach((context) => report += `\n   * \`${context}\``);
+
+  if (suggestion) {
+    report += `\n  Suggested replacements: ${suggestion}`;
+  }
+
+  return report;
+};
 
 export default function typeSnob(React, reporter = consoleReporter) {
   verifyReact(React);
@@ -47,55 +66,46 @@ export default function typeSnob(React, reporter = consoleReporter) {
     // proxy out to the real `createElement` early so we don't try to test any invalid states!
     const reactElement = createElement.call(this, type, rawProps, ...rawChildren);
 
-    let textContent = '';
+    if (typeof type === 'string' && IGNORED_DOM_ELEMENTS.indexOf(type) === -1) {
+      let textContent = '';
 
-    React.Children.forEach(children, (child) => {
-      textContent += React.isValidElement(child) ? '[React Element]' : child;
-    });
+      React.Children.forEach(children, (child) => {
+        textContent += React.isValidElement(child) ? '[React Element]' : child;
+      });
 
-    const errors = SNOBBY_TESTS
-      .map((test) => {
-        const contexts = [];
+      const errors = SNOBBY_TESTS
+        .map((test) => {
+          const contexts = [];
 
-        textContent.replace(test.regexp, (match, ...args) => {
-          const fullText = args.pop();
+          textContent.replace(test.regexp, (match, ...args) => {
+            const fullText = args.pop();
 
-          const startOffset = args.pop();
-          const endOffset = startOffset + match.length;
+            const startOffset = args.pop();
+            const endOffset = startOffset + match.length;
 
-          const contextStartOffset = Math.max(startOffset - CONTEXT_LENGTH, 0);
-          const contextEndOffset = Math.min(endOffset + CONTEXT_LENGTH, fullText.length);
+            const contextStartOffset = Math.max(startOffset - CONTEXT_LENGTH, 0);
+            const contextEndOffset = Math.min(endOffset + CONTEXT_LENGTH, fullText.length);
 
-          contexts.push(fullText.slice(contextStartOffset, contextEndOffset).replace(/\n/g, ' '));
+            contexts.push(fullText.slice(contextStartOffset, contextEndOffset).replace(/\n/g, ' '));
 
-          // *do not* replace, as we may need to do further processing
-          return match;
-        });
+            // *do not* replace, as we may need to do further processing
+            return match;
+          });
 
-        if (contexts.length === 0) {
-          return;
-        }
-
-        return Object.assign({ contexts }, test);
-      })
-      .filter((returnedThing) => returnedThing);
-
-    if (errors.length > 0) {
-      reporter(DocChomp`
-        [React Type Snob] Problems detected in text content of \`${getDisplayName(type, rawProps)}\`${(reactElement._owner && reactElement._owner.getName) ? `. Please check the render method of \`${reactElement._owner.getName()}\`` : ''};
-        ${errors.map(({ name, suggestion, contexts }) => {
-          let report = `* Found ${name};`;
-
-          contexts.forEach((context) => report += `\n   * \`${context}\``);
-
-          if (suggestion) {
-            report += `\n  Suggested replacements: ${suggestion}`;
+          if (contexts.length === 0) {
+            return;
           }
 
-          return report;
-        }).join('\n\n')
-        }`
-      );
+          return Object.assign({ contexts }, test);
+        })
+        .filter((returnedThing) => returnedThing);
+
+      if (errors.length > 0) {
+        reporter(DocChomp`
+          [React Type Snob] Problems detected in text content of \`${getDisplayName(type, rawProps)}\`${(reactElement._owner && reactElement._owner.getName) ? `. Please check the render method of \`${reactElement._owner.getName()}\`` : ''};
+          ${errors.map(testLineGenerator).join('\n\n')}`
+        );
+      }
     }
 
     return reactElement;
