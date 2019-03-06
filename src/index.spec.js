@@ -112,6 +112,13 @@ describe('Type Snob', () => {
       expect(mockInfractionReporter).not.toHaveBeenCalled();
     });
 
+    it('ignores monospace-by-default elements', () => {
+      expect(() => {
+        FakeReact.createElement('code', null, 'export BASH_VAR="$(echo \'this is a gnarly string but if you\\\'ve put it in here you probably want it\')"');
+      }).not.toThrow();
+      expect(mockInfractionReporter).not.toHaveBeenCalled();
+    });
+
     it('gracefully handles multiple suggestions', () => {
       expect(() => {
         FakeReact.createElement('span', null, 'you didn\'t make very good use of Unicode here ...');
