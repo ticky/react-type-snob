@@ -34,7 +34,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.1",
     "eslint": "5.15.1",
-    "jest": "24.1.0",
+    "jest": "24.3.1",
     "react": "16.8.4"
   },
   "babel": {
