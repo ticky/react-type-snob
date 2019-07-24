@@ -27,10 +27,10 @@
     "doc-chomp": "^1.1.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.5.0",
-    "@babel/core": "7.5.4",
-    "@babel/preset-env": "7.5.4",
-    "@babel/runtime": "7.5.4",
+    "@babel/cli": "7.5.5",
+    "@babel/core": "7.5.5",
+    "@babel/preset-env": "7.5.5",
+    "@babel/runtime": "7.5.5",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.2",
     "eslint": "6.1.0",
