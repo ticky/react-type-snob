@@ -87,6 +87,22 @@ describe('Type Snob', () => {
         expect(mockInfractionReporter.mock.calls).toMatchSnapshot();
       });
 
+      it('unbalanced double quotes', () => {
+        expect(() => {
+          FakeReact.createElement('span', null, 'This quote" is lonely!');
+        }).not.toThrow();
+        expect(mockInfractionReporter).toHaveBeenCalledTimes(1);
+        expect(mockInfractionReporter.mock.calls).toMatchSnapshot();
+      });
+
+      it('unbalanced single quotes', () => {
+        expect(() => {
+          FakeReact.createElement('span', null, "This quote' is lonely too!");
+        }).not.toThrow();
+        expect(mockInfractionReporter).toHaveBeenCalledTimes(1);
+        expect(mockInfractionReporter.mock.calls).toMatchSnapshot();
+      });
+
       it('full-stops as ellipses', () => {
         expect(() => {
           FakeReact.createElement('span', null, 'this typography sucks...');

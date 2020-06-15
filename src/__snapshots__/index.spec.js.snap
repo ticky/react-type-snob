@@ -71,3 +71,31 @@ Array [
   ],
 ]
 `;
+
+exports[`Type Snob typeSnobCreateElement tests for unbalanced double quotes 1`] = `
+Array [
+  Array [
+    "[React Type Snob] Problems detected in text content of \`component-name-here\`. Please check the render method of \`ParentItem\`;
+* Found unbalanced double quotes;
+   * \`This quote\\" is lonely!\`
+
+* Found ugly double quotes;
+   * \`This quote\\" is lonely!\`
+  Suggested replacements: \`“\` or \`”\`",
+  ],
+]
+`;
+
+exports[`Type Snob typeSnobCreateElement tests for unbalanced single quotes 1`] = `
+Array [
+  Array [
+    "[React Type Snob] Problems detected in text content of \`component-name-here\`. Please check the render method of \`ParentItem\`;
+* Found unbalanced single quotes;
+   * \`This quote' is lonely too!\`
+
+* Found ugly single quotes;
+   * \`This quote' is lonely too!\`
+  Suggested replacements: \`‘\` or \`’\`",
+  ],
+]
+`;
