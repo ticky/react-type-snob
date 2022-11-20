@@ -35,7 +35,7 @@
     "babel-eslint": "10.1.0",
     "eslint": "6.8.0",
     "jest": "26.0.1",
-    "react": "16.13.1"
+    "react": "18.2.0"
   },
   "babel": {
     "presets": [
